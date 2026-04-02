@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prehistoric Park</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://and-97.github.io/J2ME.js/dist/j2me.js"></script>
+    <style>
+        body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { width: 100%; flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
+        canvas { max-width: 100%; max-height: 100%; image-rendering: pixelated; }
+        
+        .controls { width: 100%; background: #222; padding: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .row { display: flex; gap: 10px; }
+        
+        button { width: 60px; height: 50px; background: #444; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; -webkit-tap-highlight-color: transparent; }
+        button:active { background: #666; transform: scale(0.95); }
+        .btn-main { background: #f39c12; width: 80px; } /* Кнопка ОК */
+        .btn-soft { background: #3498db; width: 70px; } /* Софт-кнопки меню */
+        
+        #status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        #start-screen { position: absolute; z-index: 10; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="start-screen">
+            <button style="width: 200px; height: 60px; background: #27ae60;" onclick="startGame()">ИГРАТЬ</button>
+        </div>
+        <div id="status">Загрузка...</div>
+        </div>
+
+    <div class="controls">
+        <div class="row">
+            <button class="btn-soft" onmousedown="press(-6)" onmouseup="release(-6)">МЕНЮ</button>
+            <button onmousedown="press(38)" onmouseup="release(38)">↑</button>
+            <button class="btn-soft" onmousedown="press(-7)" onmouseup="release(-7)">НАЗАД</button>
+        </div>
+        <div class="row">
+            <button onmousedown="press(37)" onmouseup="release(37)">←</button>
+            <button class="btn-main" onmousedown="press(13)" onmouseup="release(13)">ОК</button>
+            <button onmousedown="press(39)" onmouseup="release(39)">→</button>
+        </div>
+        <div class="row">
+            <button onmousedown="press(40)" onmouseup="release(40)">↓</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        var j2me;
+        
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('status').innerText = 'Запуск игры...';
+            
+            j2me = new J2ME({
+                container: document.getElementById('game-container'),
+                onStatusUpdate: (s) => { document.getElementById('status').innerText = s; if(s==='Running') document.getElementById('status').style.display='none'; }
+            });
+
+            // ВАЖНО: убедись, что файл на GitHub называется именно game.jar
+            j2me.loadURL("game.jar", function() {
+                j2me.start();
+            });
+        }
+
+        function press(k) { if(j2me) j2me.keyPress(k); }
+        function release(k) { if(j2me) j2me.keyRelease(k); }
+    </script>
+</body>
+</html>
